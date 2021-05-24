@@ -63,6 +63,5 @@ class SessionMessageSerializerTest(TestCase):
         Message.objects.create(user=self.first_user, session=self.session, message="ada")
 
         serializer = SessionMessageSerializer(self.session)
-        print(len(serializer.data["messages"]))
 
         self.assertTrue(len(serializer.data["messages"]) == 3)
