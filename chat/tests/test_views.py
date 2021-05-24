@@ -1,9 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 from chat.models import Member, Session
-from chat.usecases import SessionUseCase, CommonUseCase
 from chat.views import SessionViewSet, MessageViewSet
 
 
@@ -82,7 +81,6 @@ class MessageViewTest(TestCase):
         request = self.factory.get('/message/')
         force_authenticate(request, user=self.user)
         response = self.view(request, self.session.code)
-        print(response)
 
         self.assertEqual(200, response.status_code)
 
@@ -90,7 +88,6 @@ class MessageViewTest(TestCase):
         request = self.factory.post('/message/', self.data)
         force_authenticate(request, user=self.user)
         response = self.view(request, self.session.code)
-        print(response)
 
         self.assertEqual(201, response.status_code)
 

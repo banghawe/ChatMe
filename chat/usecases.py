@@ -1,3 +1,5 @@
+import copy
+
 from django.contrib.auth.models import User
 from rest_framework.exceptions import NotFound
 
@@ -72,12 +74,12 @@ class SessionUseCase(CommonUseCase):
         if self.is_user_exists(self.user) and self.is_session_exists(session_code):
             session = Session.objects.get(code=session_code)
             user = User.objects.get(username=self.user)
-            data = {
-                "session": session.id,
-                "user": user.id,
-                "message": data["message"]
-            }
-            serializer = MessageSerializer(data=data)
+
+            new_data = copy.deepcopy(data)
+            new_data["session"] = session.id
+            new_data["user"] = user.id
+
+            serializer = MessageSerializer(data=new_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
