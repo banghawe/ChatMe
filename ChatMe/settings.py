@@ -66,12 +66,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'chat.exceptions.ExceptionMiddleware',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'EXCEPTION_HANDLER': 'chat.exceptions.handle_exception'
 }
 
 ROOT_URLCONF = 'ChatMe.urls'
@@ -99,7 +101,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('chatme-redis', 6379)],
+            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT'))],
         },
     },
 }
