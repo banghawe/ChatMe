@@ -22,7 +22,7 @@ class Session(TrackableDataModel):
 
 class Message(TrackableDataModel):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    session = models.ForeignKey(Session, on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session, related_name="messages", on_delete=models.DO_NOTHING)
     message = models.TextField(max_length=2000)
 
 
