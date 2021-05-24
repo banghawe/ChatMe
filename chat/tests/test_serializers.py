@@ -1,7 +1,9 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.exceptions import ValidationError
 
-from chat.serializers import RegisterSerializer
+from chat.models import Session, Member, Message
+from chat.serializers import RegisterSerializer, SessionMessageSerializer
 
 
 class RegisterSerializerTest(TestCase):
@@ -36,3 +38,31 @@ class RegisterSerializerTest(TestCase):
         serializer = RegisterSerializer(data=self.not_valid_data)
 
         self.assertRaisesRegex(ValidationError, "password didn't match!", serializer.is_valid, True)
+
+
+class SessionMessageSerializerTest(TestCase):
+    def setUp(self) -> None:
+        self.first_user = User.objects.create_user(
+            username="alpha",
+            password="12345678!",
+            email="alpha@site.com"
+        )
+
+        self.second_user = User.objects.create_user(
+            username="beta",
+            password="12345678!",
+            email="beta@site.com"
+        )
+
+        self.session = Session.objects.create(user=self.first_user)
+        Member.objects.create(user=self.second_user, session=self.session)
+
+    def test_nested_session_message_serializer(self):
+        Message.objects.create(user=self.first_user, session=self.session, message="hallo beta")
+        Message.objects.create(user=self.second_user, session=self.session, message="hallo alpha")
+        Message.objects.create(user=self.first_user, session=self.session, message="ada")
+
+        serializer = SessionMessageSerializer(self.session)
+        print(len(serializer.data["messages"]))
+
+        self.assertTrue(len(serializer.data["messages"]) == 3)

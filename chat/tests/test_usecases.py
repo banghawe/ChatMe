@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from chat.models import Member
+from chat.models import Member, Session
 from chat.usecases import SessionUseCase, CommonUseCase
+from rest_framework.exceptions import NotFound
 
 
 class CommonUseCaseTest(TestCase):
@@ -35,6 +36,18 @@ class SessionUseCaseTest(TestCase):
             password="12345678!",
             email="beta@site.com"
         )
+
+    def test_pass_is_session_exists(self):
+        first_user = User.objects.get(username="alpha")
+        session = Session.objects.create(user=first_user)
+
+        self.assertEqual(True, SessionUseCase.is_session_exists(session.code))
+
+    def test_failed_is_session_exists(self):
+        session_code = "083bd39f-1ddc-4f94-b12f-ca9904e2985a"
+
+        with self.assertRaises(NotFound):
+            SessionUseCase.is_session_exists(session_code)
 
     def test_create(self):
         user = User.objects.get(username="alpha")
@@ -78,6 +91,14 @@ class SessionUseCaseTest(TestCase):
         with self.assertRaises(Member.DoesNotExist):
             Member.objects.get(user=user, session_id=data["id"])
 
+    def test_failed_join_session_not_found(self):
+        session_code = "083bd39f-1ddc-4f94-b12f-ca9904e2985a"
+        second_user = User.objects.get(username="beta")
+        same_session = SessionUseCase(second_user.username)
+
+        with self.assertRaises(NotFound):
+            same_session.join(session_code)
+
     def test_pass_join(self):
         first_user = User.objects.get(username="alpha")
         second_user = User.objects.get(username="beta")
@@ -90,5 +111,28 @@ class SessionUseCaseTest(TestCase):
         member = Member.objects.get(user=second_user, session_id=data["id"])
 
         self.assertEqual(second_user.id, member.user.id)
+
+    def test_retrieve(self):
+        first_user = User.objects.get(username="alpha")
+        session = SessionUseCase(first_user.username)
+        data = session.create()
+
+        result = session.retrieve(data["code"])
+
+        self.assertIn("messages", result)
+
+    def test_pass_create_message(self):
+        message = "message"
+
+        first_user = User.objects.get(username="alpha")
+        session = SessionUseCase(first_user.username)
+        data = session.create()
+
+        result = session.create_message(data["code"], {"message": message})
+
+        self.assertEqual(message, result["message"])
+
+
+
 
 
