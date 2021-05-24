@@ -1,0 +1,9 @@
+[run]
+omit =
+    */site-packages/*
+    ChatMe/wsgi.py
+    ChatMe/asgi.py
+    manage.py
+    chat/apps.py
+    chat/tests/*
+    chat/migrations/*
