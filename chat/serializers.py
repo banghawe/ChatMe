@@ -19,6 +19,8 @@ class MemberSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
+    message = serializers.CharField(max_length=2000, required=True, error_messages={'required': 'message is required'})
+
     class Meta:
         model = Message
         fields = '__all__'
