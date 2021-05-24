@@ -24,6 +24,14 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SessionMessageSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Session
+        fields = ['id', 'user', 'code', 'messages']
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
