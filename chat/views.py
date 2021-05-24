@@ -31,3 +31,21 @@ class SessionViewSet(viewsets.ViewSet):
 
         return Response({"message": data})
 
+
+class MessageViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def retrieve(request: Request, session_code: str):
+        session = SessionUseCase(username=request.user)
+        data = session.retrieve(session_code)
+
+        return Response(data)
+
+    @staticmethod
+    def create(request: Request, session_code):
+        session = SessionUseCase(username=request.user)
+        result = session.create_message(session_code, request.data)
+
+        return Response(result, status=status.HTTP_201_CREATED)
+
