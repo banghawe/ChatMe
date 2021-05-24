@@ -50,9 +50,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_jsonfield_backport',
+    'channels',
 
     'rest_framework',
     'chat',
+    'notifications'
 ]
 
 MIDDLEWARE = [
@@ -90,6 +93,20 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'ChatMe.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('chatme-redis', 6379)],
+        },
+    },
+}
+
+NOTIFICATIONS_CHANNELS = {
+    'websocket': 'notifications.channels.WebSocketChannel'
+}
 
 WSGI_APPLICATION = 'ChatMe.wsgi.application'
 

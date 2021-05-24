@@ -10,6 +10,7 @@ services:
       - .:/app
     depends_on:
       - chatme-db
+      - chatme-redis
 
   chatme-db:
     image: postgres
@@ -22,3 +23,18 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - ${DOCKER_POSTGRES_PORT}:${POSTGRES_PORT}
+
+  chatme-redis:
+    image: docker.io/bitnami/redis:6.2
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+
+volumes:
+  redis_data:
+    driver: local
